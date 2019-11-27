@@ -78,8 +78,8 @@ void EXTI4_15_IRQHandler(){
 uint16_t read_but(){
   uint16_t but_status = 0;
   but_status = GPIO_READ_BIT(GPIOB, 0) | GPIO_READ_BIT(GPIOB, 1)  |
-               GPIO_READ_BIT(GPIOB, 3) | GPIO_READ_BIT(GPIOA, 13) |
-               GPIO_READ_BIT(GPIOA, 14)| GPIO_READ_BIT(GPIOA, 15) |
+               GPIO_READ_BIT(GPIOB, 3) | GPIO_READ_BIT(GPIOB, 13) |
+               GPIO_READ_BIT(GPIOB, 14)| GPIO_READ_BIT(GPIOA, 15) |
                GPIO_READ_BIT(GPIOB, 4) | GPIO_READ_BIT(GPIOB, 7)  |
                GPIO_READ_BIT(GPIOB, 10);
   return but_status;

@@ -5,6 +5,7 @@
 #include "stm32f0xx_rcc.h"
 #include "enc_but.h"
 #include "spi.h"
+#include "adc_vbat.h"
 
 #define _PLLON16
 

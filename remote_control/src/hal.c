@@ -1,6 +1,5 @@
 #include "hal.h"
 
-
 void rcc_config(){
   RCC_HSEConfig(RCC_HSE_ON);
   if (RCC_WaitForHSEStartUp() == SUCCESS){
@@ -34,8 +33,8 @@ void rcc_config(){
   GPIO_SET_PUPUP(GPIOB,4);
   GPIO_SET_PUPUP(GPIOB,7);
   GPIO_SET_PUPUP(GPIOB,10);
-  GPIO_SET_PUPUP(GPIOA,13);
-  GPIO_SET_PUPUP(GPIOA,14);
+  GPIO_SET_PUPUP(GPIOB,13);
+  GPIO_SET_PUPUP(GPIOB,14);
   GPIO_SET_PUPUP(GPIOA,15);
   
   GPIO_SET_OUTPUT(GPIOF,7);
@@ -44,7 +43,10 @@ void rcc_config(){
 
 void start_delay(){
   RCC_APB2PeriphClockCmd(RCC_APB2Periph_TIM16,ENABLE);
-  TIM16->PSC = 16000 - 1;
+  TIM16->PSC = 8000 - 1;
+  #ifdef _PLLON16 
+    TIM16->PSC = 16000 - 1;
+  #endif 
   TIM16->ARR = 50; // 0.05sec
   //TIM16->DIER |= TIM_DIER_UIE;
   TIM16->CR1 |= TIM_CR1_CEN;
@@ -56,9 +58,14 @@ void start_delay(){
 
 void turn_off(){
   RCC_APB2PeriphClockCmd(RCC_APB2Periph_TIM15,ENABLE);
-  TIM15->PSC = 1600000 - 1;//10Hz
-  TIM15->ARR = 10; // 0.05sec
+  TIM15->PSC = 8000 - 1;//1000Hz
+  TIM15->ARR = 100; // 0.1sec
+  #ifdef _PLLON16 
+    TIM15->PSC = 16000 - 1;//1000Hz
+  #endif 
   TIM15->DIER |= TIM_DIER_UIE;
+  NVIC_SetPriority(TIM15_IRQn,3); 
+  NVIC_EnableIRQ(TIM15_IRQn);
   TIM15->CR1 |= TIM_CR1_CEN;
 }
 void TIM15_IRQHandler(void){
@@ -66,7 +73,7 @@ void TIM15_IRQHandler(void){
   static uint16_t counter = 0;
   if (GPIO_READ_BIT(GPIOF, 6))
     counter++;
-  if (counter >= 5)
+  if (counter >= 50)
     GPIO_RESET_BIT(GPIOF, 7);
 }
 
@@ -79,6 +86,9 @@ int16_t read_register(int16_t addr){
   } else
   if (addr < REG_NUM+ENC_NUM+1){
     return leds[addr-ENC_NUM-1];
+  } else
+  if (addr < REG_NUM+ENC_NUM+2){
+    return adc_vbat_value();
   }
   return -1;
 }
@@ -103,7 +113,10 @@ int16_t write_register(int16_t addr, int16_t data){
 
 void spi_tx_proc(){
   RCC_APB2PeriphClockCmd(RCC_APB2Periph_TIM16,ENABLE);
-  TIM16->PSC = 8000 - 1;//1kHz
+  TIM16->PSC = 4000 - 1;//1kHz
+  #ifdef _PLLON16 
+    TIM16->PSC = 8000 - 1;
+  #endif
   TIM16->ARR = 25;
   TIM16->DIER |= TIM_DIER_UIE;
   NVIC_SetPriority(TIM16_IRQn,3); 
@@ -113,6 +126,5 @@ void spi_tx_proc(){
 
 void TIM16_IRQHandler(void){
   TIM16->SR &= ~TIM_SR_UIF;
-  //spi1_tx_ie(leds, 3);
   spi1_tx_ie(shift_reg, 9);
 }

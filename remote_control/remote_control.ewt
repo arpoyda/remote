@@ -2335,6 +2335,9 @@
   <group>
     <name>inc</name>
     <file>
+      <name>$PROJ_DIR$\inc\adc_vbat.h</name>
+    </file>
+    <file>
       <name>$PROJ_DIR$\inc\enc_but.h</name>
     </file>
     <file>
@@ -2355,6 +2358,9 @@
   </group>
   <group>
     <name>src</name>
+    <file>
+      <name>$PROJ_DIR$\src\adc_vbat.c</name>
+    </file>
     <file>
       <name>$PROJ_DIR$\src\enc_but.c</name>
     </file>

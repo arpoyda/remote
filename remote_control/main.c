@@ -20,6 +20,7 @@ int main()
   __enable_irq();
   EXTI_config();
   spi_mstr_config();
+  adc_config();
   
   start_delay();
   turn_off();
